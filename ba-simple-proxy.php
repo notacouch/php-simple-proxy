@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 /**
  * Modified 6/21
@@ -146,7 +146,7 @@
 
 abstract class Proxy {
 
-    static function go($url) {
+    static function go($url, $send_headers = array()) {
 
         // Change these configuration options if needed, see above descriptions for info.
         $enable_jsonp    = false;
@@ -188,6 +188,16 @@ abstract class Proxy {
           
           curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
           curl_setopt( $ch, CURLOPT_HEADER, true );
+          // Add HTTP Headers, at least mimic client's http accept
+          if ( empty($send_headers)) {
+            $send_headers = array();
+            if ( ! empty($_SERVER['HTTP_ACCEPT'])) {
+              $send_headers[] = 'Accept: '.$_SERVER['HTTP_ACCEPT'];
+            }
+          }
+          if ( ! empty($send_headers)) {
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, $send_headers);
+          }
           curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
           
           curl_setopt( $ch, CURLOPT_USERAGENT, $_GET['user_agent'] ? $_GET['user_agent'] : $_SERVER['HTTP_USER_AGENT'] );
@@ -263,6 +273,6 @@ abstract class Proxy {
 
 // ############################################################################
 
-if (isset($_GET['url'])) {
-    echo Proxy::go($_GET['url']);
-}
+//if (isset($_GET['url'])) {
+//    echo Proxy::go($_GET['url']);
+//}
